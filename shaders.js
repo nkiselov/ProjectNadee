@@ -18,13 +18,13 @@ out vec4 outColor;
 
 const gradientFS = `
 void grads(out vec4 px, out vec4 py){
-    vec4 top = texture(valueTex, texCoord + texelSize * vec2(0,-1));
-    vec4 bottom = texture(valueTex, texCoord + texelSize * vec2(0,1));
-    vec4 left = texture(valueTex, texCoord + texelSize * vec2(-1,0));
-    vec4 right = texture(valueTex, texCoord + texelSize * vec2(1,0));
+    vec4 top = texture(valueTex, texCoord + vec2(0,-dx.y));
+    vec4 bottom = texture(valueTex, texCoord + vec2(0,dx.y));
+    vec4 left = texture(valueTex, texCoord + vec2(-dx.x,0));
+    vec4 right = texture(valueTex, texCoord + vec2(dx.x,0));
 
-    px = (right-left)/2.0;
-    py = (top-bottom)/2.0;
+    px = (right-left)/2.0*dx.z;
+    py = (top-bottom)/2.0*dx.z;
 }
 `
 
@@ -32,7 +32,7 @@ const terrainRenderFS = commonFS+`
 
 uniform sampler2D valueTex;
 uniform sampler2D shadeTex;
-uniform float texelSize;
+uniform vec3 dx;
 
 `+gradientFS+`
 
@@ -41,26 +41,24 @@ void main() {
     vec4 px;
     vec4 py;
     grads(px,py);
-    float h = 0.005;
     float shade = 1.0;
     vec3 color = texture(shadeTex, vec2((center.a+1.0)/2.0,0.0)).rgb;
     if(center.a>0.0){
-        shade = h/sqrt(h*h+(px.a*px.a+py.a*py.a));
+        shade = 1.0/sqrt(1.0+(px.a*px.a+py.a*py.a));
     }
-
     outColor = vec4(color*shade,1.0);
 }`
 
 const blurShaderFS = commonFS+`
 
 uniform sampler2D valueTex;
-uniform float texelSize;
+uniform vec3 dx;
 
 void main(){
-    vec4 lapc = (texture(valueTex,texCoord+vec2(1.0,0.0)*texelSize)
-    +texture(valueTex,texCoord+vec2(0.0,-1.0)*texelSize)
-    +texture(valueTex,texCoord+vec2(0.0,1.0)*texelSize)
-    +texture(valueTex,texCoord+vec2(-1.0,0.0)*texelSize)-4.0*texture(valueTex,texCoord));
+    vec4 lapc = (texture(valueTex,texCoord+vec2(dx.x,0.0))
+    +texture(valueTex,texCoord+vec2(0.0,-dx.y))
+    +texture(valueTex,texCoord+vec2(0.0,dx.y))
+    +texture(valueTex,texCoord+vec2(-dx.x,0.0))-4.0*texture(valueTex,texCoord));
     outColor = texture(valueTex,texCoord)+0.1*lapc;
 }
 `
