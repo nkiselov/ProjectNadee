@@ -59,7 +59,7 @@ void main(){
     +texture(valueTex,texCoord+vec2(0.0,-dx.y))
     +texture(valueTex,texCoord+vec2(0.0,dx.y))
     +texture(valueTex,texCoord+vec2(-dx.x,0.0))-4.0*texture(valueTex,texCoord));
-    outColor = texture(valueTex,texCoord)+0.1*lapc;
+    outColor = texture(valueTex,texCoord)+0.2*lapc;
 }
 `
 
@@ -72,10 +72,37 @@ void main(){
 }
 `
 
+const copyFS = commonFS+`
+
+uniform sampler2D valueTex;
+
+void main(){
+    outColor = texture(valueTex,texCoord);
+}
+`
+
+const addForceFS = commonFS+`
+
+void main(){
+    outColor = offset;
+}
+`
+
+const renderVelocityFS = commonFS+`
+
+uniform sampler2 velTex;
+
+void main(){
+    
+}
+`
+
 return {
     terrainRenderFS:terrainRenderFS,
     blurShaderFS: blurShaderFS,
-    addAlphaFS: addAlphaFS
+    addAlphaFS: addAlphaFS,
+    copyFS: copyFS,
+    addForceFS: addForceFS
 }
 
 }))
