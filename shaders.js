@@ -65,11 +65,19 @@ void main(){
 }
 `
 
+const addAlphaFS = commonFS+`
 
+uniform sampler2D valueTex;
+
+void main(){
+    outColor = texture(valueTex,texCoord)-vec4(0.0,0.0,0.0,0.1);
+}
+`
 
 return {
     terrainRenderFS:terrainRenderFS,
-    blurShaderFS: blurShaderFS
+    blurShaderFS: blurShaderFS,
+    addAlphaFS: addAlphaFS
 }
 
 }))

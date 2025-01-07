@@ -1,9 +1,9 @@
 (function(){
 
-let width = 512
-let height = 512
+let width = 2048
+let height = 1024
 let canvas = document.createElement('canvas')
-document.body.appendChild(canvas)
+document.body.prepend(canvas)
 canvas.width = width
 canvas.height = height
 
@@ -27,11 +27,21 @@ renderShader.setUniform("texelSize",1/width)
 let blurShader = new ComputeShader(gl, new MeshAll(),width,height,shaders.blurShaderFS,["valueTex"])
 blurShader.setUniform("texelSize",1/width)
 
+let addAlphaShader = new ComputeShader(gl, new MeshCenteredSquare(),width,height,shaders.addAlphaFS,["valueTex"])
+addAlphaShader.setUniform("size",[50/width,50/height],UniformType.U2F)
+
 let iters = 0
+let addAlphaQueue = []
 function animate(time){
     iters+=1
-    console.log(1000/(time/iters))
-    for(let i=0; i<1; i++){
+    // console.log(1000/(time/iters))
+    addAlphaQueue.forEach((v)=>{
+        addAlphaShader.setUniform("center",[v[0]/width,1-v[1]/height],UniformType.U2F)
+        addAlphaShader.run([terrainTexPong.getCur()],terrainTexPong.getNext())
+        terrainTexPong.swap()
+    })
+    addAlphaQueue = []
+    for(let i=0; i<getSpeed(); i++){
         blurShader.run([terrainTexPong.getCur()],terrainTexPong.getNext())
         terrainTexPong.swap()
     }
@@ -41,5 +51,10 @@ function animate(time){
 
 requestAnimationFrame(animate)
 
+
+canvas.addEventListener('click', function(event) {
+    console.log('Mouse clicked at:', event.offsetX, event.offsetY); 
+    addAlphaQueue.push([event.offsetX,event.offsetY])
+});
 
 })()

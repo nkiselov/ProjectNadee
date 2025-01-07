@@ -1,3 +1,10 @@
+const UniformType = Object.freeze({
+    U1F: 1,
+    U2F: 2,
+    U3F: 3,
+    U4F: 4
+});
+
 class ComputeShader{
     constructor(gl, mesh, width, height, fs, inputNames){
         this.mesh = mesh
@@ -10,6 +17,7 @@ class ComputeShader{
         this.programLocations = new Map()
         this.positionLocation = gl.getAttribLocation(this.program, 'position')
         this.uniformValues = new Map()
+        this.uniformTypes = new Map()
         this.inputLocations = inputNames.map((name)=>{
             let loc = gl.getUniformLocation(this.program,name);
             if(loc==-1 || loc==null) console.error("Can't find "+name)
@@ -17,8 +25,9 @@ class ComputeShader{
         })
     }
 
-    setUniform(id,val){
+    setUniform(id,val,type){
         this.uniformValues.set(id,val)
+        this.uniformTypes.set(id,type)
         if(this.programLocations.has(id)) return;
         let loc = this.gl.getUniformLocation(this.program, id);
         if(loc==-1 || loc==null) console.error("Can't find "+id)
@@ -67,7 +76,23 @@ class ComputeShader{
         gl.useProgram(this.program)
 
         for (const [id, val] of this.uniformValues.entries()) {
-            gl.uniform1f(this.programLocations.get(id), val)
+            switch(this.uniformTypes.get(id)){
+                case UniformType.U4F:
+                    gl.uniform4f(this.programLocations.get(id), val[0], val[1], val[2], val[3])
+                    break;
+                case UniformType.U3F:
+                    gl.uniform3f(this.programLocations.get(id), val[0], val[1], val[2])
+                    break;
+                case UniformType.U2F:
+                    gl.uniform2f(this.programLocations.get(id), val[0], val[1])
+                    break;
+                case UniformType.U1F:
+                    gl.uniform1f(this.programLocations.get(id), val[0])
+                    break;
+                default:
+                    gl.uniform1f(this.programLocations.get(id), val)
+                    break;
+            }
         }
 
         for(let i=0; i<inputs.length; i++){
