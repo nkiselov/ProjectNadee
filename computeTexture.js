@@ -21,10 +21,13 @@ class ComputeTexture{
             [TextureType.T3I,[gl.RGB8,gl.RGB,gl.UNSIGNED_BYTE]],
             [TextureType.T4I,[gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE]]
         ])
+        this.gl = gl
+        this.width = width
+        this.height = height
         this.texture = gl.createTexture();
-        let format = TextureTypeToFormat.get(type);
+        this.format = TextureTypeToFormat.get(type);
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, format[0], width, height, 0, format[1], format[2], data);
+        gl.texImage2D(gl.TEXTURE_2D, 0, this.format[0], width, height, 0, this.format[1], this.format[2], data);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -34,5 +37,11 @@ class ComputeTexture{
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
         }
+    }
+
+    setData(data){
+        const gl = this.gl
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, this.format[0], this.width, this.height, 0, this.format[1], this.format[2], data);
     }
 }

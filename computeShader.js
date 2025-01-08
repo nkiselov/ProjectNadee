@@ -42,6 +42,7 @@ class ComputeShader{
 
     render(inputs){
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null)
+        // this.checkFramebufferStatus()
         this.execute(inputs)
     }
 

@@ -50,7 +50,7 @@ class MeshCenteredSquare{
                 out vec2 texCoord;
                 uniform vec2 center;
                 uniform vec2 size;
-                varying vec2 offset;
+                out vec2 offset;
 
                 void main() {
                     vec2 newPosition = 2.0*center-vec2(1.0,1.0)+size*position.xy;
