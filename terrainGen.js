@@ -40,10 +40,10 @@
         return terrainData
     }
 
-    function heightmapToAlpha(heightMap){
+    function heightmapToChannel(heightMap, skip, id){
         let pixels = new Float32Array(heightMap.length*4);
         for(let i=0; i<heightMap.length; i++){
-            pixels[4*i+3] = heightMap[i];
+            pixels[skip*i+id] = heightMap[i];
         }
         return pixels;
     }
@@ -51,6 +51,6 @@
     return {
         defaultPreset: defaultPreset,
         generateHeightmap: generateHeightmap,
-        heightmapToAlpha: heightmapToAlpha
+        heightmapToChannel: heightmapToChannel
     }
 }))

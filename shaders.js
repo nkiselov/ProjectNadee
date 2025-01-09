@@ -102,12 +102,11 @@ const renderVelocityFS = commonFS+`
 
 out vec4 outColor;
 uniform sampler2D velTex;
-uniform sampler2D pTex;
 
 void main(){
+    vec4 val = texture(velTex, texCoord);
     outColor = vec4(
-        (texture(pTex, texCoord).x),
-        (0.2+texture(velTex, texCoord)*0.0).xy,
+        val.a,0.0,0.0,
     1.0);
 }
 `
@@ -183,7 +182,62 @@ out vec4 outColor;
 void main(){
     outColor = vec4(0.0);
 }
+`
 
+const ter2airFS = commonFS+`
+out vec4 outColor;
+uniform sampler2D valueTex;
+uniform sampler2D velTex;
+uniform float forceFactor;
+uniform vec2 px;
+
+`+gradientFS+`
+
+void main(){
+    vec4 gx;
+    vec4 gy;
+    grads(gx,gy);
+    outColor = texture(velTex,texCoord)-forceFactor*vec4(gx.a,gy.a,0.0,0.0);
+}
+`
+
+const air2terFS = commonFS+`
+out vec4 outColor;
+uniform sampler2D valueTex;
+uniform sampler2D velTex;
+uniform float forceFactor;
+uniform vec2 px;
+
+`+gradientFS+`
+
+void main(){
+    vec4 v = texture(velTex,texCoord);
+    float T = texture(valueTex,texCoord-1000.0*vec2(px.x*v.x,px.y*v.y)).a;
+    vec4 center = texture(valueTex,texCoord);
+    outColor = vec4(center.xyz,T);
+}
+`
+
+const terrainSimFS = commonFS+`
+out vec4 outColor;
+uniform sampler2D valueTex;
+uniform vec2 px;
+
+`+gradientFS+`
+
+void main(){
+    vec4 gx;
+    vec4 gy;
+    grads(gx,gy);
+    vec4 center = texture(valueTex, texCoord);
+    float h = 0.001;
+    float dT = 0.0;
+    if(center.r>0.0){
+        float hot = h/sqrt(h*h+(gx.r*gx.r+gy.r*gy.r));
+        dT = 0.01*(hot-center.a);
+    }
+    outColor = center + vec4(0.0,0.0,0.0,dT);
+}
 `
 
 return {
@@ -197,7 +251,10 @@ return {
     divergenceFS: divergenceFS,
     jacobiFS: jacobiFS,
     subtractGradientFS: subtractGradientFS,
-    zeroFS: zeroFS
+    zeroFS: zeroFS,
+    terrainSimFS: terrainSimFS,
+    ter2airFS: ter2airFS,
+    air2terFS: air2terFS
 }
 
 }))
