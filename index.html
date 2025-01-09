@@ -15,14 +15,15 @@
 <body>
 
     <div id="speed-controls" style="display: flex;">
-        <button class="speed-btn" id="btn0" onclick="setSpeed(0)">></button>
-        <button class="speed-btn" id="btn1" onclick="setSpeed(1)">>></button>
-        <button class="speed-btn" id="btn2" onclick="setSpeed(2)">>>></button>
-        <button class="speed-btn" id="btn3" onclick="setSpeed(3)">>>>></button>
+        <button class="speed-btn" id="btn0" onclick="setSpeed(0)">||</button>
+        <button class="speed-btn" id="btn0" onclick="setSpeed(1)">></button>
+        <button class="speed-btn" id="btn1" onclick="setSpeed(2)">>></button>
+        <button class="speed-btn" id="btn2" onclick="setSpeed(3)">>>></button>
+        <button class="speed-btn" id="btn3" onclick="setSpeed(4)">>>>></button>
     </div>
 
     <script defer>
-        let simulationSpeeds = [1,2,5,20]
+        let simulationSpeeds = [0,1,2,5,20]
         let speedButtons = document.querySelectorAll('.speed-btn')
         let curSet = 0
 
@@ -32,11 +33,13 @@
             speedButtons[curSet].classList.toggle('active', true);
         }
 
-        setSpeed(0)
+        setSpeed(1)
 
         function getSpeed(){
             return simulationSpeeds[curSet]
         }
+
+        renderType = 0
 
     </script>
     <script  src="main.js"></script>

@@ -17,13 +17,13 @@ in vec2 texCoord;
 
 const gradientFS = `
 void grads(out vec4 gx, out vec4 gy){
-    vec4 top = texture(valueTex, texCoord + vec2(0,-px.y));
-    vec4 bottom = texture(valueTex, texCoord + vec2(0,px.y));
-    vec4 left = texture(valueTex, texCoord + vec2(-px.x,0));
-    vec4 right = texture(valueTex, texCoord + vec2(px.x,0));
+    vec4 top = texture(valueTex, texCoord + vec2(0,-px.y)/2.0);
+    vec4 bottom = texture(valueTex, texCoord + vec2(0,px.y)/2.0);
+    vec4 left = texture(valueTex, texCoord + vec2(-px.x,0)/2.0);
+    vec4 right = texture(valueTex, texCoord + vec2(px.x,0)/2.0);
 
-    gx = (right-left)/2.0;
-    gy = (top-bottom)/2.0;
+    gx = (right-left);
+    gy = (bottom-top);
 }
 `
 
@@ -90,11 +90,11 @@ const addForceFS = commonFS+`
 out vec2 outColor;
 in vec2 offset;
 uniform sampler2D velTex;
-uniform float force;
+uniform vec2 force;
 
 void main(){
     // outColor = texture(velTex,texCoord).rg+vec2(1.0,0.0)*max(0.0,1.0-length(offset));
-    outColor = texture(velTex,texCoord).rg + offset*force*max(0.0,1.0-length(offset));
+    outColor = texture(velTex,texCoord).rg + force*max(0.0,1.0-length(offset));
 }
 `
 
@@ -106,8 +106,8 @@ uniform sampler2D pTex;
 
 void main(){
     outColor = vec4(
-        (texture(pTex, texCoord)).x,
-        (texture(velTex, texCoord)*1.5+0.5).xy,
+        (texture(pTex, texCoord).x),
+        (0.2+texture(velTex, texCoord)*0.0).xy,
     1.0);
 }
 `
@@ -176,6 +176,16 @@ void main(){
 }
 `
 
+const zeroFS = commonFS+`
+
+out vec4 outColor;
+
+void main(){
+    outColor = vec4(0.0);
+}
+
+`
+
 return {
     terrainRenderFS:terrainRenderFS,
     blurShaderFS: blurShaderFS,
@@ -186,7 +196,8 @@ return {
     advectFS: advectFS,
     divergenceFS: divergenceFS,
     jacobiFS: jacobiFS,
-    subtractGradientFS: subtractGradientFS
+    subtractGradientFS: subtractGradientFS,
+    zeroFS: zeroFS
 }
 
 }))
