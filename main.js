@@ -1,7 +1,7 @@
 (function(){
 
-let width = 1024
-let height = 1024
+let width = 768
+let height = 768
 let dt = 1024/60
 let forceFactor = 0.2;
 let mu = 0.000001;
@@ -80,6 +80,7 @@ function animate(time){
         advectShader.run([velocityTexPong.getCur(),velocityTexPong.getCur()],velocityTexPong.getNext())
         velocityTexPong.swap()
 
+        // viscosity
         // copyShader.run([velocityTexPong.getCur()],tempVelocityTex)
         // jacobiShader.setUniform("alpha",1/mu/dt)
         // jacobiShader.setUniform("beta",4+1/mu/dt)
@@ -101,7 +102,7 @@ function animate(time){
         subtractGradientShader.run([pressureTexPong.getCur(),velocityTexPong.getCur()],velocityTexPong.getNext())
         velocityTexPong.swap()
     }
-    renderVelocityShader.render([velocityTexPong.getCur(),inkTexPong.getCur()])
+    renderVelocityShader.render([velocityTexPong.getCur(),pressureTexPong.getCur()])
     requestAnimationFrame(animate)
 }
 

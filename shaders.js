@@ -107,7 +107,7 @@ uniform sampler2D pTex;
 void main(){
     outColor = vec4(
         (texture(pTex, texCoord).x),
-        (0.2+texture(velTex, texCoord)*0.0).xy,
+        (0.5+texture(velTex, texCoord)*1.5).xy,
     1.0);
 }
 `
